@@ -150,9 +150,30 @@ bigdata-ai-pipeline/
 └── README.md
 ```
 
-## Installation -->
+## Setup & Installation -->
+
+### 🐳 Option 1: Using Docker (Recommended)
+
+Start the entire infrastructure (Zookeeper, Kafka, Spark Master & Worker) with a single command:
+
+```bash
+docker-compose up -d
+```
+
+- **Kafka**: available at `localhost:9092` for host connections.
+- **Spark Master UI**: [http://localhost:8080](http://localhost:8080)
+- **Spark Worker UI**: [http://localhost:8081](http://localhost:8081)
+
+*Note: Infrastructure is ready immediately. You can now proceed to **Train the Model** or **Run Streaming Pipeline** section.*
+
+---
+
+### 💻 Option 2: Manual Setup
+
 1. Install dependencies
+```bash
 pip install pyspark kafka-python
+```
 
 2. Start Kafka 
 bin/zookeeper-server-start.sh config/zookeeper.properties

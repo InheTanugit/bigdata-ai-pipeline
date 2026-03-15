@@ -40,6 +40,8 @@ spark = SparkSession.builder \
 
 spark.sparkContext.setLogLevel("WARN")
 
+kafka_bootstrap_servers = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
+
 print("🔥 Streaming Fraud Scoring Started 🔥")
 
 # Load Trained Model
@@ -60,7 +62,7 @@ schema = StructType() \
 # Read from Kafka
 kafka_df = spark.readStream \
     .format("kafka") \
-    .option("kafka.bootstrap.servers", "localhost:9092") \
+    .option("kafka.bootstrap.servers", kafka_bootstrap_servers) \
     .option("subscribe", "transaction_events") \
     .option("startingOffsets", "latest") \
     .load()
@@ -145,7 +147,7 @@ def process_batch(batch_df, batch_id):
             # Write to Kafka
             kafka_payload.write \
                 .format("kafka") \
-                .option("kafka.bootstrap.servers", "localhost:9092") \
+                .option("kafka.bootstrap.servers", kafka_bootstrap_servers) \
                 .option("topic", "fraud_predictions") \
                 .save()
                 

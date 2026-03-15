@@ -144,8 +144,8 @@ bigdata-ai-pipeline/
 │
 ├── scripts/
 │   ├── train_model.py
-│   ├── transaction_producer.py
-│   └── streaming_pipeline.py
+│   ├── streaming_fraud_scoring.py
+│   └── streaming_transaction_processing.py
 │
 └── README.md
 ```
@@ -160,7 +160,7 @@ bin/kafka-server-start.sh config/server.properties
 
 3. Create Kafka Topics
 bin/kafka-topics.sh --create \
---topic transactions \
+--topic transaction_events \
 --bootstrap-server localhost:9092 \
 --partitions 1 --replication-factor 1
 
@@ -177,11 +177,24 @@ python train_model.py
 - Load feature store data
 - Train a logistic regression model
 - Save the model to the models/ directory
-- Run Streaming Pipeline
-
 ⁕ Start the Spark streaming job:
 
-spark-submit streaming_pipeline.py
+```bash
+spark-submit scripts/streaming_fraud_scoring.py
+```
+
+### 🔬 Alternative: Test using Sample Dataset
+
+Instead of running a continuous data generator, you can use the provided sample dataset to feed accurate micro-batches to the pipeline.
+
+1. **Push data to Kafka**:
+   ```bash
+   cat data/sample_transactions.jsonl | bin/kafka-console-producer.sh \
+   --bootstrap-server localhost:9092 \
+   --topic transaction_events
+   ```
+
+2. **Run the streaming app** (it will process the data immediately).
 
 ## The pipeline will -->
 

@@ -1,0 +1,10 @@
+{"event_id": "e1", "user_id": "u1", "amount": 150.0, "device": "desktop", "location": "Rome", "event_time": "2026-03-15T12:00:01.000000"}
+{"event_id": "e2", "user_id": "u2", "amount": 50.0, "device": "mobile", "location": "Milan", "event_time": "2026-03-15T12:00:05.000000"}
+{"event_id": "e3", "user_id": "u1", "amount": 12000.0, "device": "mobile", "location": "Milan", "event_time": "2026-03-15T12:00:10.000000"}
+{"event_id": "e4", "user_id": "u3", "amount": 300.0, "device": "tablet", "location": "Naples", "event_time": "2026-03-15T12:00:15.000000"}
+{"event_id": "e5", "user_id": "u4", "amount": 25000.0, "device": "desktop", "location": "Turin", "event_time": "2026-03-15T12:00:20.000000"}
+{"event_id": "e6", "user_id": "u2", "amount": 7500.0, "device": "mobile", "location": "Bologna", "event_time": "2026-03-15T12:00:25.000000"}
+{"event_id": "e7", "user_id": "u1", "amount": 100.0, "device": "mobile", "location": "Rome", "event_time": "2026-03-15T12:00:30.000000"}
+{"event_id": "e8", "user_id": "u3", "amount": 10.0, "device": "desktop", "location": "Naples", "event_time": "2026-03-15T12:00:35.000000"}
+{"event_id": "e9", "user_id": "u5", "amount": 8000.0, "device": "tablet", "location": "Florence", "event_time": "2026-03-15T12:00:40.000000"}
+{"event_id": "e10", "user_id": "u6", "amount": 30000.0, "device": "mobile", "location": "Venice", "event_time": "2026-03-15T12:00:45.000000"}

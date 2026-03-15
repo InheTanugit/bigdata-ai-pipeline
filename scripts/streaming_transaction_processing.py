@@ -1,8 +1,33 @@
+import logging
+import json
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import from_json, col
+from pyspark.sql.functions import from_json, col, to_timestamp, window, sum, count, avg
 from pyspark.sql.types import StructType, StringType, DoubleType
-from pyspark.sql.functions import col, to_timestamp, sum
-from pyspark.sql.functions import window, sum, count, avg
+
+# Structured Logging Setup
+class JsonFormatter(logging.Formatter):
+    def format(self, record):
+        log_record = {
+            "timestamp": self.formatTime(record, self.datefmt),
+            "level": record.levelname,
+            "message": record.getMessage(),
+            "logger": record.name
+        }
+        if hasattr(record, "props"):
+            log_record.update(record.props)
+        return json.dumps(log_record)
+
+def get_logger(name):
+    logger = logging.getLogger(name)
+    if not logger.handlers:
+        handler = logging.StreamHandler()
+        handler.setFormatter(JsonFormatter())
+        logger.addHandler(handler)
+        logger.setLevel(logging.INFO)
+    return logger
+
+logger = get_logger("StreamingTransactionProcessing")
+
 
 # Create Spark session 
 spark = SparkSession.builder \
@@ -68,33 +93,52 @@ feature_df = agg_df.select(
     col("avg_amount")
 )
 
-# this is for debuging
-    # .format("console") \
-    # .option("truncate", "false") \
-    # .option("checkpointLocation", "../checkpoints/transactions_console") \
-# Write stream to parquet
-#query = parsed_df.writeStream \
-    #.format("parquet") \
-    #.outputMode("append") \
-    #.option("path", "../data/output") \
-    #.option("checkpointLocation", "../checkpoints/transactions_parquet") \
-    #.start()
 
-# Write aggregated output
-# query = agg_df.writeStream \
-    #.format("parquet") \
-    #.outputMode("append") \
-    #.option("path", "../data/output/user_spend") \
-    #.option("checkpointLocation", "../checkpoints/user_spend_agg") \
-    #.start()
 
-# Write as parquet store
+# Batch Processing with Logging
+def process_batch(batch_df, batch_id):
+    try:
+        # Aggregated stats
+        stats = batch_df.select(
+            count("*").alias("count"),
+            avg("total_spend").alias("avg_total_spend")
+        ).collect()[0]
+        
+        count_val = stats["count"]
+        avg_spend = stats["avg_total_spend"] or 0.0
+        
+        # 1. Log Ingestion
+        logger.info("Streaming pipeline metrics", extra={"props": {
+            "batch_id": batch_id,
+            "records_ingested": count_val,
+            "stage": "ingestion"
+        }})
+        
+        # 2. Log Feature Engineering
+        logger.info("Feature engineering completed", extra={"props": {
+            "batch_id": batch_id,
+            "avg_total_spend": float(avg_spend),
+            "stage": "features"
+        }})
+        
+        if count_val > 0:
+            # Write to Parquet
+            batch_df.write \
+                .format("parquet") \
+                .mode("append") \
+                .save("../data/feature_store")
+                
+    except Exception as e:
+        logger.error(f"Error processing batch {batch_id}: {str(e)}")
+        raise e
+
+# Write aggregated output (through foreachBatch with Structured Logging)
 query = feature_df.writeStream \
-    .format("parquet") \
-    .outputMode("append") \
-    .option("path", "../data/feature_store") \
+    .foreachBatch(process_batch) \
     .option("checkpointLocation", "../checkpoints/feature_store") \
+    .outputMode("append") \
     .start()
+
 
 
 print("🚀 Streaming query started")

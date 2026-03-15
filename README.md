@@ -3,6 +3,19 @@
 ![Kafka](https://img.shields.io/badge/Kafka-EventStreaming-black)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
+## 📋 Prerequisites & Versions
+
+To run this project, ensure you have the following software installed:
+
+| Component | Required Version | Note |
+| :--- | :--- | :--- |
+| **Python** | `3.10+` | For ML and script execution |
+| **Apache Spark** | `3.5.x` | Structured Streaming processing |
+| **Apache Kafka** | `3.7.x` | Event stream message broker |
+| **Docker** | `2.x+` | Optional, for easy environment setup |
+
+---
+
 ## Motivation -->
 
 - Financial systems require real-time fraud detection to prevent
@@ -144,8 +157,8 @@ bigdata-ai-pipeline/
 │
 ├── scripts/
 │   ├── train_model.py
-│   ├── transaction_producer.py
-│   └── streaming_pipeline.py
+│   ├── streaming_fraud_scoring.py
+│   └── streaming_transaction_processing.py
 │
 └── README.md
 ```
@@ -177,11 +190,19 @@ python train_model.py
 - Load feature store data
 - Train a logistic regression model
 - Save the model to the models/ directory
-- Run Streaming Pipeline
+## Execute Streaming Pipeline
 
-⁕ Start the Spark streaming job:
+Start the Spark streaming job to process data from Kafka:
 
-spark-submit streaming_pipeline.py
+### 1. Fraud Scoring Pipeline
+```bash
+spark-submit scripts/streaming_fraud_scoring.py
+```
+
+### 2. Transaction Aggregation Pipeline
+```bash
+spark-submit scripts/streaming_transaction_processing.py
+```
 
 ## The pipeline will -->
 
@@ -216,6 +237,16 @@ bin/kafka-console-consumer.sh \
 - Real-time transaction monitoring
 - Event-driven ML inference pipelines
 - Streaming analytics platforms
+
+## 🔧 Troubleshooting
+
+| Issue | Cause | Solution |
+| :--- | :--- | :--- |
+| **Connection Refused** | Kafka is not listening on `9092` | Verify that Docker is running or start Kafka manually |
+| **ClassNotFoundError (Spark)** | Spark packages missing on execution path | Ensure `.venv` has `pyspark` and setup standard binary lists |
+| **winutils.exe missing (Windows)** | Hadoop binaries missing on Windows | Download `winutils.exe` and set `HADOOP_HOME` environment variable |
+
+---
 
 ## Future Improvements -->
 

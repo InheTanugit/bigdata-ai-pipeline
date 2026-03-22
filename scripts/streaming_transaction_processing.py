@@ -38,6 +38,8 @@ print("🔥 STREAMING FILE EXECUTED 🔥")
 
 spark.sparkContext.setLogLevel("WARN")
 
+kafka_bootstrap_servers = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
+
 # Schema
 schema = StructType() \
     .add("event_id", StringType()) \
@@ -50,7 +52,7 @@ schema = StructType() \
 # Read from Kafka
 kafka_df = spark.readStream \
     .format("kafka") \
-    .option("kafka.bootstrap.servers", "localhost:9092") \
+    .option("kafka.bootstrap.servers", kafka_bootstrap_servers) \
     .option("subscribe", "transaction_events") \
     .option("startingOffsets", "latest") \
     .load()
